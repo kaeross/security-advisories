@@ -1,18 +1,5 @@
-enum Severity {
-    INFO = 'info',
-    LOW = 'low',
-    MODERATE = 'moderate',
-    HIGH = 'high',
-    CRITICAL = 'critical',
-}
-
-interface IAuditReport extends Record<string, any> {
-    vulnerabilities: Record<string, IVulnerability>;
-}
-
-interface IVulnerability extends Record<string, any> {
-    severity: Severity;
-}
+import { IAuditReport, IVulnerability } from "./audit_report";
+import { Severity, severityValue } from "./severity";
 
 /**
  * Focuses the audit report so that only the highest severity vulnerabilities are shown.
@@ -22,9 +9,11 @@ interface IVulnerability extends Record<string, any> {
  * @returns a focused audit report
  */
 export const getFocusedLog = (auditReport: IAuditReport): IAuditReport => {
-    auditReport.vulnerabilities = getHighestVulnerabilities(auditReport.vulnerabilities);
+    const focusedAuditReport: IAuditReport = {...auditReport};
 
-    return auditReport;
+    focusedAuditReport.vulnerabilities = getHighestVulnerabilities(auditReport.vulnerabilities);
+
+    return focusedAuditReport;
 }
 
 /**
@@ -66,13 +55,5 @@ const getHighestVulnerabilities = (vulnerabilities: Record<string, IVulnerabilit
  * @returns boolean
  */
 const isSeverityHigher = (severity: Severity, severityToCompare: Severity): boolean => {
-    const severityValue = {
-        [Severity.INFO]: 0,
-        [Severity.LOW]: 1,
-        [Severity.MODERATE]: 2,
-        [Severity.HIGH]: 3,
-        [Severity.CRITICAL]: 4,
-    };
-
     return severityValue[severity] > severityValue[severityToCompare];
 }
